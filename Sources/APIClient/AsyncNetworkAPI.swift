@@ -8,7 +8,7 @@
 import Foundation
 
 
-enum NetworkRequestError: LocalizedError, Equatable {
+public enum NetworkRequestError: LocalizedError, Equatable {
     case invalidRequest
     case badRequest
     case unauthorized
@@ -75,7 +75,7 @@ extension AsyncNetworkAPI {
     //Stubs
     /// DIspatch a netwrok request
     /// - Returns: Decoded Type T
-    func dispatch<T: Decodable>(
+    public func dispatch<T: Decodable>(
         type: T.Type,
         with request: URLRequest,
         decodingWith decoder: JSONDecoder = JSONDecoder()) async throws -> T {
