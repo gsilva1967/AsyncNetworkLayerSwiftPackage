@@ -60,11 +60,11 @@ private func handleError(_ error: Error) -> NetworkRequestError {
 }
 
 @available(iOS 15, *)
-protocol AsyncNetworkAPI {
+public protocol AsyncNetworkAPI {
     
     var session: URLSession { get }
     
-   public func dispatch<T: Decodable>(
+    func dispatch<T: Decodable>(
         type: T.Type,
         with request: URLRequest,
         decodingWith decoder: JSONDecoder) async throws -> T

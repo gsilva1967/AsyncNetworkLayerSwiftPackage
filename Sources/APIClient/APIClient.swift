@@ -11,7 +11,7 @@ import SwiftUI
 public final class APIClient: AsyncNetworkAPI, URLRequestBuilder {
     
     // Session Manager
-    let session: URLSession
+    public let session: URLSession
     
     // Current Token
     var currentAccessToken: String?
