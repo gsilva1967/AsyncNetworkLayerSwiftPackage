@@ -64,7 +64,7 @@ protocol AsyncNetworkAPI {
     
     var session: URLSession { get }
     
-    func dispatch<T: Decodable>(
+   public func dispatch<T: Decodable>(
         type: T.Type,
         with request: URLRequest,
         decodingWith decoder: JSONDecoder) async throws -> T

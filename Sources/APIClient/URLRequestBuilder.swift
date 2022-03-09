@@ -15,12 +15,12 @@ import Foundation
 }
 
  protocol URLRequestBuilder: AnyObject {
-    func createRequest(type: HttpMethod, endPoint: String, headers: [String:String], body: Data?) -> URLRequest
+    public func createRequest(type: HttpMethod, endPoint: String, headers: [String:String], body: Data?) -> URLRequest
 }
 
 extension URLRequestBuilder {
     
-    func createRequest(type: HttpMethod, endPoint: String, headers: [String:String] = [:], body: Data? = nil) -> URLRequest {
+    public func createRequest(type: HttpMethod, endPoint: String, headers: [String:String] = [:], body: Data? = nil) -> URLRequest {
         // Create URLRequest
         let url = URL(string: endPoint)
         var request = URLRequest(url: url!)
