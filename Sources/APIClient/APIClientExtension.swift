@@ -46,7 +46,7 @@ extension APIClient {
                
         // Added for OAuth
         if (!jsonWebToken.isEmpty) {
-            request.addValue(jsonWebToken , forHTTPHeaderField: "Bearer")
+            request.addValue("Bearer \(jsonWebToken)" , forHTTPHeaderField: "Authorization")
         }
     }
 }
