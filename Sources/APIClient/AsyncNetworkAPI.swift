@@ -17,7 +17,7 @@ public enum NetworkRequestError: LocalizedError, Equatable {
     case error4xx(_ code: Int)
     case serverError
     case error5xx(_ code: Int)
-    case decodingError
+    case decodingError(_ errorMessage: String)
     case urlSessionFailed(_ error: URLError)
     case unknownError
     case invalidToken
@@ -50,22 +50,30 @@ private func handleError(_ error: Error) -> NetworkRequestError {
     switch error {
         case is Swift.DecodingError:
         let decodingError = error as! DecodingError
+        var errorMessage = ""
         switch(decodingError){
             case DecodingError.dataCorrupted(let context):
                 print(context)
+            errorMessage = context.debugDescription
             case DecodingError.keyNotFound(let key, let context):
                 print("Key '\(key)' not found:", context.debugDescription)
                 print("codingPath:", context.codingPath)
+           
+                errorMessage =  "Key '\(key)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
             case DecodingError.valueNotFound(let value, let context):
                 print("Value '\(value)' not found:", context.debugDescription)
                 print("codingPath:", context.codingPath)
+            
+                errorMessage =  "Value '\(value)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
             case DecodingError.typeMismatch(let type, let context):
                 print("Type '\(type)' mismatch:", context.debugDescription)
                 print("codingPath:", context.codingPath)
+                errorMessage =  "Type '\(type)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
             default:
                 print("could not determine error")
+                errorMessage = "could not determine error"
         }
-            return .decodingError
+            return .decodingError(errorMessage)
 
         case let urlError as URLError:
             return .urlSessionFailed(urlError)
