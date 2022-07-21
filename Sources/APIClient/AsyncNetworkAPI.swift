@@ -49,7 +49,24 @@ private func httpError(_ statusCode: Int) -> NetworkRequestError {
 private func handleError(_ error: Error) -> NetworkRequestError {
     switch error {
         case is Swift.DecodingError:
+        let decodingError = error as! DecodingError
+        switch(decodingError){
+            case DecodingError.dataCorrupted(let context):
+                print(context)
+            case DecodingError.keyNotFound(let key, let context):
+                print("Key '\(key)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            case DecodingError.valueNotFound(let value, let context):
+                print("Value '\(value)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            case DecodingError.typeMismatch(let type, let context):
+                print("Type '\(type)' mismatch:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            default:
+                print("could not determine error")
+        }
             return .decodingError
+
         case let urlError as URLError:
             return .urlSessionFailed(urlError)
         case let error as NetworkRequestError:
