@@ -32,14 +32,14 @@ public enum NetworkRequestError: LocalizedError, Equatable {
 /// - Returns: Mapped Error
 private func httpError(_ statusCode: Int) -> NetworkRequestError {
     switch statusCode {
-        case 400: return .badRequest
-        case 401: return .unauthorized
-        case 403: return .forbidden
-        case 404: return .notFound
-        case 402, 405...499: return .error4xx(statusCode)
-        case 500: return .serverError
-        case 501...599: return .error5xx(statusCode)
-        default: return .unknownError
+    case 400: return .badRequest
+    case 401: return .unauthorized
+    case 403: return .forbidden
+    case 404: return .notFound
+    case 402, 405...499: return .error4xx(statusCode)
+    case 500: return .serverError
+    case 501...599: return .error5xx(statusCode)
+    default: return .unknownError
     }
 }
 
@@ -48,46 +48,46 @@ private func httpError(_ statusCode: Int) -> NetworkRequestError {
 /// - Returns: Readable NetworkRequestError
 private func handleError(_ error: Error) -> NetworkRequestError {
     switch error {
-        case is Swift.DecodingError:
+    case is Swift.DecodingError:
         let decodingError = error as! DecodingError
         var errorMessage = ""
         switch(decodingError){
-            case DecodingError.dataCorrupted(let context):
-                print(context)
+        case DecodingError.dataCorrupted(let context):
+            print(context)
             errorMessage = context.debugDescription
-            case DecodingError.keyNotFound(let key, let context):
-                print("Key '\(key)' not found:", context.debugDescription)
-                print("codingPath:", context.codingPath)
-           
-                errorMessage =  "Key '\(key)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
-            case DecodingError.valueNotFound(let value, let context):
-                print("Value '\(value)' not found:", context.debugDescription)
-                print("codingPath:", context.codingPath)
+        case DecodingError.keyNotFound(let key, let context):
+            print("Key '\(key)' not found:", context.debugDescription)
+            print("codingPath:", context.codingPath)
             
-                errorMessage =  "Value '\(value)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
-            case DecodingError.typeMismatch(let type, let context):
-                print("Type '\(type)' mismatch:", context.debugDescription)
-                print("codingPath:", context.codingPath)
-                errorMessage =  "Type '\(type)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
-            default:
-                print("could not determine error")
-                errorMessage = "could not determine error"
-        }
-            return .decodingError(errorMessage)
-
-        case let urlError as URLError:
-            return .urlSessionFailed(urlError)
-        case let error as NetworkRequestError:
-            return error
+            errorMessage =  "Key '\(key)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
+        case DecodingError.valueNotFound(let value, let context):
+            print("Value '\(value)' not found:", context.debugDescription)
+            print("codingPath:", context.codingPath)
+            
+            errorMessage =  "Value '\(value)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
+        case DecodingError.typeMismatch(let type, let context):
+            print("Type '\(type)' mismatch:", context.debugDescription)
+            print("codingPath:", context.codingPath)
+            errorMessage =  "Type '\(type)' not found: \(context.debugDescription) | codingPath: \(context.codingPath)"
         default:
-            return .unknownError
+            print("could not determine error")
+            errorMessage = "could not determine error"
+        }
+        return .decodingError(errorMessage)
+        
+    case let urlError as URLError:
+        return .urlSessionFailed(urlError)
+    case let error as NetworkRequestError:
+        return error
+    default:
+        return .unknownError
     }
 }
 
 @available(iOS 15, *)
 public protocol AsyncNetworkAPI {
     
-    var session: URLSession { get }
+    var session: URLSession { get set }
     
     func dispatch<T: Decodable>(
         type: T.Type,
@@ -103,8 +103,7 @@ extension AsyncNetworkAPI {
     public func dispatch<T: Decodable>(
         type: T.Type,
         with request: URLRequest,
-        decodingWith decoder: JSONDecoder = JSONDecoder()) async throws -> T {
-            
+        decodingWith decoder: JSONDecoder = JSONDecoder()) async throws -> T {            
             do {
                 let (data, response) = try await session.data(for: request)
                 // try! debugPayloadData(data)
@@ -120,5 +119,13 @@ extension AsyncNetworkAPI {
                 throw handleError(error)
             }
         }
+    
+    public func AsyncURLSession(session: URLSession,
+                           task: URLSessionTask,
+                           didReceiveChallenge challenge: URLAuthenticationChallenge,
+                           completionHandler: (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential,
+                          URLCredential(trust: challenge.protectionSpace.serverTrust!))
+    }
 }
 

@@ -9,24 +9,43 @@ import Foundation
 import SwiftUI
 import CoreData
 
-public final class APIClient: AsyncNetworkAPI, URLRequestBuilder {
+public final class APIClient: NSObject, AsyncNetworkAPI, URLRequestBuilder, URLSessionDelegate {
     
     // Session Manager
-    public let session: URLSession
+    public var session: URLSession = URLSession()
     
     // Current Token
     var currentAccessToken: String?
     
-    public init(configuration: URLSessionConfiguration) {
-        self.session = URLSession(configuration: configuration)
+    public init(configuration: URLSessionConfiguration, allowUntrusted: Bool = false) { //configuration: URLSessionConfiguration) {
+        super.init()
+        if allowUntrusted {
+            self.session = URLSession(configuration: configuration,
+                                      delegate: self,
+                                      delegateQueue: OperationQueue.main)
+        }
+        else {
+            self.session = URLSession(configuration: configuration)
+        }
     }
     
-    public convenience init() {
-        self.init(configuration: .default)
+    public convenience init(allowUntrusted: Bool = false) {
+        //self.init(configuration: .default)
+        self.init(configuration: .default, allowUntrusted: allowUntrusted)
     }
 }
 
 extension APIClient {
+    
+    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        if challenge.protectionSpace.serverTrust == nil {
+            completionHandler(.useCredential, nil)
+        } else {
+            let trust: SecTrust = challenge.protectionSpace.serverTrust!
+            let credential = URLCredential(trust: trust)
+            completionHandler(.useCredential, credential)
+        }
+    }
     
     public func createDecoderWithDate() -> JSONDecoder {
         // Create the decoder
