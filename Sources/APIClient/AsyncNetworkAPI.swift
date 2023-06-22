@@ -93,6 +93,8 @@ public protocol AsyncNetworkAPI {
         type: T.Type,
         with request: URLRequest,
         decodingWith decoder: JSONDecoder) async throws -> T
+    
+    func dispatchText(request: URLRequest) async throws -> String
 }
 
 @available(iOS 15, *)
@@ -114,6 +116,23 @@ extension AsyncNetworkAPI {
                 }
                 
                 return try decoder.decode(type, from: data)
+            } catch {
+                //throw APIError.jsonConversionFailure(description: error.localizedDescription)
+                throw handleError(error)
+            }
+        }
+    
+    public func dispatchText(request: URLRequest) async throws -> String {
+            do {
+                let (data, response) = try await session.data(for: request)
+                // try! debugPayloadData(data)
+                let httpResponse = response as? HTTPURLResponse
+                guard httpResponse!.statusCode == 200 else {
+                    //throw APIError.responseUnsuccessful(description: "status code - \(httpResponse.statusCode)")
+                    throw httpError(httpResponse!.statusCode)
+                }
+                
+                return String(decoding: data, as: UTF8.self)
             } catch {
                 //throw APIError.jsonConversionFailure(description: error.localizedDescription)
                 throw handleError(error)

@@ -10,7 +10,7 @@ import SwiftUI
 import CoreData
 
 public final class APIClient: NSObject, AsyncNetworkAPI, URLRequestBuilder, URLSessionDelegate {
-    
+       
     // Session Manager
     public var session: URLSession = URLSession()
     
