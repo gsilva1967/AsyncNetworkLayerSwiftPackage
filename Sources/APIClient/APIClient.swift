@@ -12,7 +12,7 @@ import CoreData
 public final class APIClient: NSObject, AsyncNetworkAPI, URLRequestBuilder, URLSessionDelegate {
        
     // Session Manager
-    public var session: URLSession = URLSession()
+    public var session: URLSession = URLSession(configuration: .default)
     
     // Current Token
     var currentAccessToken: String?
