@@ -26,27 +26,29 @@ public enum NetworkRequestError: LocalizedError, Equatable {
     case requestFailed(description: String)
 }
 
-extension NetworkRequestError: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .invalidRequest: return "Invalid Request"
-        case .badRequest: return "Bad Request"
-        case .unauthorized: return "Unauthorized"
-        case .forbidden: return "Forbidden"
-        case .notFound: return "Not Found"
-        case .error4xx: return "Error 4xx"
-        case .serverError: return "Server Error"
-        case .error5xx: return "Error 5xx"
-        case .decodingError: return "Decoding Error"
-        case .urlSessionFailed: return "URL Session Failed"
-        case .unknownError: return "Unknown Error"
-        case .invalidToken: return "Invalid Token"
-        
-        //Added this from other code - MGK
-        case .requestFailed: return "Request Failed"
-        }
-    }
-}
+//extension NetworkRequestError: CustomStringConvertible {
+//    public var description: String {
+//        switch self {
+//        case .invalidRequest: return "Invalid Request"
+//        case .badRequest: return "Bad Request"
+//        case .unauthorized: return "Unauthorized"
+//        case .forbidden: return "Forbidden"
+//        case .notFound: return "Not Found"
+//        case .error4xx: return "Error 4xx"
+//        case .serverError: return "Server Error"
+//        case .error5xx: return "Error 5xx"
+//        case .decodingError: return "Decoding Error"
+//        case .urlSessionFailed: return "URL Session Failed"
+//        case .unknownError: return "Unknown Error"
+//        case .invalidToken: return "Invalid Token"
+//        
+//        //Added this from other code - MGK
+//        case .requestFailed: return "Request Failed"
+//        }
+//    }
+//        
+//    
+//}
 
 
 /// Parses a HTTP StatusCode and returns a proper error
